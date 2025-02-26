@@ -39,6 +39,7 @@ jobs:
         git checkout main
 
         git checkout -b feature-a
+        git pull 
         echo "Feature A - Line 1" > feature.txt
         echo "Feature A - Line 2" >> feature.txt
         git add feature.txt
@@ -47,6 +48,7 @@ jobs:
 
         git checkout main
         git checkout -b feature-b
+        git pull
         echo "Feature B - Different content" > feature.txt
         git add feature.txt
         git commit -m "Add feature-b content"
@@ -54,6 +56,7 @@ jobs:
 
         git checkout main
         git checkout -b feature-c
+        git pull
         echo "Debugging output" > debug.log
         git add debug.log
         git commit -m "Debugging output added"
