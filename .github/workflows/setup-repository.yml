@@ -5,6 +5,9 @@ on:
     branches:
       - main  # Runs when the repository is first created
 
+permissions:
+  contents: write
+
 jobs:
   setup-repo:
     runs-on: ubuntu-latest
