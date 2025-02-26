@@ -1,2 +1,0 @@
-Feature A - Line 1
-Feature A - Line 2
