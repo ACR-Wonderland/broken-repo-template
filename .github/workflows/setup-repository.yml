@@ -3,10 +3,10 @@ name: Setup Assignment Repository
 on:
   push:
     branches:
-      - main  # Runs when the repository is first created
+      - main  # Runs when a new repository is initialized
 
 permissions:
-  contents: write
+  contents: write  # Allows modifying repository contents
 
 jobs:
   setup-repo:
@@ -16,19 +16,28 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Fetch all history for proper branching
+        fetch-depth: 1  # Get only the latest commit to check its author
 
-    - name: Configure Git
+    - name: Check If Commit is from GitHub Classroom Bot
       run: |
-        git config --global user.name "GitHub Classroom Bot"
-        git config --global user.email "classroom@github.com"
+        AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
+        echo "Latest commit made by: $AUTHOR_NAME"
+        
+        if [[ "$AUTHOR_NAME" != "GitHub Classroom[bot]" ]]; then
+          echo "❌ Not the initial commit by GitHub Classroom Bot. Skipping setup."
+          exit 0
+        fi
+
+    - name: Configure Git with Actions Token
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
     - name: Create Feature Branches and Introduce Conflicts
       run: |
-        # Ensure we're on the main branch
         git checkout main
-        
-        # Create feature-a and modify feature.txt
+
         git checkout -b feature-a
         echo "Feature A - Line 1" > feature.txt
         echo "Feature A - Line 2" >> feature.txt
@@ -36,7 +45,6 @@ jobs:
         git commit -m "Add feature-a content"
         git push origin feature-a
 
-        # Create feature-b with conflicting changes
         git checkout main
         git checkout -b feature-b
         echo "Feature B - Different content" > feature.txt
@@ -44,7 +52,6 @@ jobs:
         git commit -m "Add feature-b content"
         git push origin feature-b
 
-        # Create feature-c with unnecessary commits
         git checkout main
         git checkout -b feature-c
         echo "Debugging output" > debug.log
